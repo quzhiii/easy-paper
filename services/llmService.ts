@@ -131,8 +131,60 @@ const callOpenAICompatible = async (
   }
 };
 
-// Gemini
-const callGemini = async (apiKey: string, model: string, baseUrl: string, systemPrompt: string, userPrompt: string) => {
+// Gemini - REST API (Lightweight, better CORS support)
+const callGeminiREST = async (apiKey: string, model: string, systemPrompt: string, userPrompt: string) => {
+  // Use Gemini REST API directly (no SDK)
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: [{
+          role: "user",
+          parts: [{ text: userPrompt }]
+        }],
+        systemInstruction: {
+          parts: [{ text: systemPrompt }]
+        },
+        generationConfig: {
+          temperature: 0.1,
+          responseMimeType: 'application/json'
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMsg = errorData.error?.message || response.statusText;
+      
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(`Gemini API Key Error: ${errorMsg}. Please verify your API key.`);
+      }
+      throw new Error(`Gemini API Error (${response.status}): ${errorMsg}`);
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    return text;
+    
+  } catch (error: any) {
+    const errorMessage = error.message || error.toString();
+    
+    // Check for network/CORS errors
+    if (error.name === 'TypeError' || errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+      throw new Error("Gemini Connection Failed: Network error or CORS issue. Try: (1) Use Vercel proxy (enable in production); (2) Switch to Qwen/Kimi/DeepSeek; (3) Check API key.");
+    }
+    
+    throw error;
+  }
+};
+
+// Gemini - SDK (For backward compatibility, not recommended for browser)
+const callGeminiSDK = async (apiKey: string, model: string, baseUrl: string, systemPrompt: string, userPrompt: string) => {
   const clientOptions: any = { apiKey };
   if (baseUrl && baseUrl !== DEFAULT_ENDPOINTS.gemini) {
       clientOptions.baseUrl = baseUrl;
@@ -140,7 +192,6 @@ const callGemini = async (apiKey: string, model: string, baseUrl: string, system
 
   const ai = new GoogleGenAI(clientOptions);
   
-  // Try non-streaming first for better CORS compatibility
   try {
       const response = await ai.models.generateContent({
         model: model,
@@ -155,20 +206,16 @@ const callGemini = async (apiKey: string, model: string, baseUrl: string, system
       const fullText = response.response?.text() || "";
       return fullText;
   } catch (error: any) {
-      // Handle GoogleGenAI specific error structures or network errors
       const errorMessage = error.message || error.toString();
       
-      // Check for common network/CORS errors
       if (errorMessage.includes('0') || errorMessage.includes('fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('CORS')) {
-          throw new Error("Gemini Connection Failed: This is likely a CORS issue. Gemini API requires server-side calls or proper CORS configuration. Solutions: (1) Use a backend proxy server; (2) Try a different provider; (3) Check your API key and endpoint.");
+          throw new Error("Gemini SDK Connection Failed: CORS issue. Switching to REST API is recommended.");
       }
       
-      // Check for API key issues
       if (errorMessage.includes('API_KEY_INVALID') || errorMessage.includes('401') || errorMessage.includes('403')) {
-          throw new Error(`Gemini API Key Error: ${errorMessage}. Please verify your API key in Settings.`);
+          throw new Error(`Gemini API Key Error: ${errorMessage}. Please verify your API key.`);
       }
       
-      // If it's a structured error from SDK
       if (error.statusText) {
           throw new Error(`Gemini API Error: ${error.statusText} (${error.status || 'unknown'})`);
       }
@@ -200,33 +247,51 @@ export const generateLLMResponse = async ({ systemPrompt, userPrompt, settings }
 
   let text = "";
   try {
-    if (useProxy) {
-      // Use Vercel serverless function proxy
+    // For Gemini: Try REST API first (better CORS support), fallback to proxy if needed
+    if (provider === 'gemini') {
+      try {
+        // Method 1: REST API (Recommended for browser)
+        text = await callGeminiREST(apiKey, modelName, systemPrompt, userPrompt);
+      } catch (restError: any) {
+        // If REST fails and we're in production, try proxy
+        if (useProxy && isProduction) {
+          console.warn('Gemini REST API failed, trying proxy...', restError.message);
+          const proxyEndpoint = '/api/llm-proxy';
+          const response = await fetch(proxyEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              provider, apiKey, model: modelName, systemPrompt, userPrompt, baseUrl: endpoint
+            })
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Proxy error: ${response.status}`);
+          }
+          const data = await response.json();
+          text = data.content || "";
+        } else {
+          throw restError;
+        }
+      }
+    } else if (useProxy && isProduction) {
+      // Other providers: Use proxy in production
       const proxyEndpoint = '/api/llm-proxy';
       const response = await fetch(proxyEndpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          provider,
-          apiKey,
-          model: modelName,
-          systemPrompt,
-          userPrompt,
-          baseUrl: endpoint
+          provider, apiKey, model: modelName, systemPrompt, userPrompt, baseUrl: endpoint
         })
       });
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || `Proxy error: ${response.status}`);
       }
-
       const data = await response.json();
       text = data.content || "";
     } else {
-      // Direct call (development mode for non-Gemini providers)
+      // Direct call (development mode)
       switch (provider) {
         case 'qwen':
         case 'kimi':
@@ -234,9 +299,6 @@ export const generateLLMResponse = async ({ systemPrompt, userPrompt, settings }
         case 'zhipu':
         case 'openai':
           text = await callOpenAICompatible(endpoint, apiKey, modelName, systemPrompt, userPrompt);
-          break;
-        case 'gemini':
-          text = await callGemini(apiKey, modelName, endpoint, systemPrompt, userPrompt);
           break;
         default:
           throw new Error("Unsupported provider");
