@@ -22,6 +22,18 @@ const cleanJson = (text: string): string => {
 
   // 3. Remove single-line comments (risky but handles some LLM outputs)
   clean = clean.replace(/^\s*\/\/.*$/gm, '');
+  
+  // 4. Fix common array/object issues from Zhipu/other LLMs
+  // Remove trailing commas before ] and }
+  clean = clean.replace(/,(\s*[\]}])/g, '$1');
+  
+  // Fix missing commas between array elements (common in Zhipu output)
+  // This is a heuristic: if we see '}"' or '}\'', add comma
+  clean = clean.replace(/(\})(\s*["\{\[])/g, '$1,$2');
+  clean = clean.replace(/(\])(\s*["\{\[])/g, '$1,$2');
+  
+  // Fix double quotes issues
+  clean = clean.replace(/“/g, '"').replace(/”/g, '"');
 
   return clean;
 };

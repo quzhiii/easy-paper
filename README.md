@@ -10,9 +10,12 @@
 [![React](https://img.shields.io/badge/React-19.2-61dafb)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646cff)](https://vitejs.dev/)
 
-### 🌐 Try It Now
+### 🌐 在线使用
 
-**[🚀 Launch App](https://easy-paper.vercel.app)** | **[📦 Source Code](https://github.com/quzhiii/easy-paper)**
+**部署地址:** https://easy-paper.vercel.app  
+**GitHub:** https://github.com/quzhiii/easy-paper
+
+[🚀 立即使用](https://easy-paper.vercel.app) | [📦 源代码](https://github.com/quzhiii/easy-paper)
 
 [English](#english) | [中文](#chinese) | [📖 Troubleshooting](TROUBLESHOOTING.md)
 
