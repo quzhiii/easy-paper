@@ -1,4 +1,5 @@
 {
+  "name": "easy-paper",
   "rewrites": [
     {
       "source": "/api/:path*",

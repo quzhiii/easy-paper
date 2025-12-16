@@ -17,20 +17,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let response;
 
     if (provider === 'gemini') {
-      // Handle Gemini with Google SDK
-      const { GoogleGenerativeAI } = await import('@google/generative-ai');
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const geminiModel = genAI.getGenerativeModel({ 
-        model: model,
-        systemInstruction: systemPrompt,
-        generationConfig: {
-          temperature: 0.1,
-          responseMimeType: 'application/json'
-        }
-      });
+      // Handle Gemini with REST API (no SDK dependency needed)
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       
-      const result = await geminiModel.generateContent(userPrompt);
-      const text = result.response.text();
+      const fetchResponse = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: 'application/json'
+          }
+        })
+      });
+
+      if (!fetchResponse.ok) {
+        const errorData = await fetchResponse.json().catch(() => ({}));
+        throw new Error(`Gemini API Error: ${errorData.error?.message || fetchResponse.statusText}`);
+      }
+
+      const data = await fetchResponse.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
       return res.status(200).json({ content: text });
       
     } else {

@@ -10,6 +10,10 @@
 [![React](https://img.shields.io/badge/React-19.2-61dafb)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646cff)](https://vitejs.dev/)
 
+### 🌐 Try It Now
+
+**[🚀 Launch App on Vercel](https://easy-paper.vercel.app)** | **[📦 View on GitHub](https://github.com/quzhiii/easy-paper)**
+
 [English](#english) | [中文](#chinese) | [📖 Troubleshooting](TROUBLESHOOTING.md)
 
 </div>
@@ -18,7 +22,87 @@
 
 ## <a id="english"></a>🌟 Overview
 
-**SciNavi AI** is a next-generation research design copilot that leverages large language models to provide comprehensive methodological guidance for academic research. Whether you're a PhD candidate, postdoc researcher, or principal investigator, SciNavi AI helps you evaluate research topics, design robust methodologies, and navigate the publication landscape with confidence.
+**SciNavi AI** is a next-generation research design copilot that leverages large language models to provide comprehensive methodological guidance for academic research. From topic selection to methodology design, from evidence tracing to journal fit—all powered by AI.
+
+### 👥 Who Should Use SciNavi AI?
+
+- **📚 PhD Students & Early-Career Researchers**: Validate research topics, design robust methodologies, avoid common pitfalls
+- **🔬 Postdocs & Principal Investigators**: Rapidly assess feasibility of new research directions, optimize grant proposals
+- **🏥 Clinical Researchers**: Design observational studies with proper causal inference methods (DiD, RD, PSM, IV)
+- **📊 Health Policy Analysts**: Evaluate policy interventions using quasi-experimental designs
+- **🧑‍🏫 Research Supervisors**: Guide students through methodological choices, identify data gaps early
+- **📝 Systematic Reviewers**: Trace evidence chains, assess methodological quality across studies
+
+### 🎯 Ideal Use Cases
+
+#### 🔍 Scenario 1: Early-Stage Topic Exploration
+**Problem**: "I have a vague research idea about telemedicine's impact on diabetes management, but don't know if it's feasible or novel."
+
+**SciNavi AI Solution**:
+- Traces recent literature (PubMed, Web of Science, CNKI) to verify novelty
+- Identifies data requirements (e.g., patient ID, HbA1c levels, telemedicine usage logs)
+- Suggests causal identification strategies (e.g., DiD if rollout is staggered, RD if eligibility has a cutoff)
+- Rates feasibility based on your data availability
+
+**Result**: A comprehensive research design pack in 60 seconds, saving weeks of literature review.
+
+---
+
+#### 🏥 Scenario 2: Policy Evaluation Study Design
+**Problem**: "Need to evaluate the impact of long-term care insurance on household medical expenditure using CHARLS data."
+
+**SciNavi AI Solution**:
+- Auto-generates PICO framework (Population, Intervention, Comparison, Outcome)
+- Designs DiD identification strategy with parallel trends diagnostics
+- Creates causal DAG showing confounding paths and adjustment sets
+- Produces executable Python code with TWFE regression and event study plots
+
+**Result**: Publication-ready methodology section + reproducible code.
+
+---
+
+#### 📊 Scenario 3: Data Feasibility Check
+**Problem**: "I want to use RDD to study air pollution's effect on mental health, but unsure if my data supports it."
+
+**SciNavi AI Solution**:
+- Scans your data dictionary for required variables (running variable, outcome, covariates)
+- Checks for sufficient observations near the cutoff (Huai River boundary)
+- Suggests bandwidth selection methods and robustness checks
+- Flags missing variables that could threaten internal validity
+
+**Result**: Clear go/no-go decision with specific data augmentation recommendations.
+
+---
+
+#### 🎓 Scenario 4: Journal Targeting Strategy
+**Problem**: "Finished a manuscript on statins and CVD prevention in elderly patients, which journal should I target?"
+
+**SciNavi AI Solution**:
+- Matches your study design (PSM + survival analysis) to journal preferences
+- Recommends 5-7 journals with tier classification (Q1/Q2) and fit reasoning
+- Provides positioning tips (e.g., emphasize real-world evidence, heterogeneity analysis)
+- Warns about potential rejection triggers (e.g., insufficient balance diagnostics)
+
+**Result**: Strategic submission plan with backup options.
+
+---
+
+### 💡 Why Choose SciNavi AI?
+
+**Compared to Manual Literature Review:**
+- ⏱️ **60 seconds vs. 2 weeks**: Instant evidence tracing and novelty verification
+- 🎯 **Comprehensive**: Covers methodology, data, publication strategy—not just "is this novel?"
+- 🔄 **Iterative**: Refine your topic instantly based on AI feedback
+
+**Compared to Statistical Consultants:**
+- 💰 **Free vs. $200/hour**: No consultation fees
+- 🕐 **24/7 Availability**: No scheduling conflicts
+- 📝 **Reproducible**: Get Python code + LaTeX equations, not just verbal advice
+
+**Compared to Generic AI Chatbots (ChatGPT, Claude):**
+- 🎓 **Domain-Specialized**: Trained on epidemiology, health economics, causal inference
+- 📊 **Structured Output**: JSON protocol, Mermaid DAG, executable code—not just text
+- 🔗 **Evidence-Backed**: Cites real papers, no hallucinated references
 
 ### 🎯 Key Features
 
@@ -224,7 +308,87 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## <a id="chinese"></a>🌟 项目简介
 
-**SciNavi AI（科研智导）** 是一款基于大语言模型的新一代科研设计助手，为学术研究提供全方位的方法学指导。无论您是博士生、博士后还是课题组长，SciNavi AI 都能帮助您评估研究选题、设计稳健的方法学方案，并自信地驾驭学术发表流程。
+**SciNavi AI（科研智导）** 是一款基于大语言模型的新一代科研设计助手，为学术研究提供从选题到发表的全方位方法学指导。从证据溯源到方法学设计，从数据可行性到期刊匹配——全由AI驱动。
+
+### 👥 适用人群
+
+- **📚 博士生与青年学者**：验证选题可行性，设计稳健方法，规避常见陷阱
+- **🔬 博士后与课题负责人**：快速评估新研究方向，优化基金申请书
+- **🏥 临床研究者**：设计观察性研究，应用因果推断方法（DiD、RD、PSM、IV）
+- **📊 卫生政策分析师**：使用准实验设计评估政策干预效果
+- **🧑‍🏫 研究导师**：指导学生做出方法学选择，及早识别数据缺口
+- **📝 系统综述作者**：追溯证据链，评估研究的方法学质量
+
+### 🎯 典型应用场景
+
+#### 🔍 场景1：早期选题探索
+**问题**："我想研究远程医疗对糖尿病管理的影响，但不确定是否可行、是否新颖。"
+
+**SciNavi AI方案**：
+- 追溯近期文献（PubMed、Web of Science、CNKI）验证新颖性
+- 识别数据需求（如患者ID、HbA1c水平、远程医疗使用记录）
+- 建议因果识别策略（如分阶段推广用DiD，资格有截断点用RD）
+- 根据数据可得性评分可行性
+
+**结果**：60秒内生成完整研究设计包，节省数周文献调研时间。
+
+---
+
+#### 🏥 场景2：政策评估研究设计
+**问题**："需要用CHARLS数据评估长护险对家庭医疗支出的影响。"
+
+**SciNavi AI方案**：
+- 自动生成PICO框架（人群、干预、对照、结局）
+- 设计DiD识别策略，包含平行趋势诊断
+- 创建因果DAG，展示混杂路径和调整集
+- 生成可执行Python代码（TWFE回归 + 事件研究图）
+
+**结果**：可发表的方法学章节 + 可复现代码。
+
+---
+
+#### 📊 场景3：数据可行性检查
+**问题**："想用断点回归研究空气污染对心理健康的影响，但不确定数据是否支持。"
+
+**SciNavi AI方案**：
+- 扫描数据字典查找必需变量（驱动变量、结局、协变量）
+- 检查截断点附近是否有足够观测值（淮河边界）
+- 建议带宽选择方法和稳健性检验
+- 标记可能威胁内部效度的缺失变量
+
+**结果**：明确的可行/不可行判断，附具体数据补充建议。
+
+---
+
+#### 🎓 场景4：期刊投稿策略
+**问题**："完成了他汀类药物与老年患者CVD预防的研究，应该投哪个期刊？"
+
+**SciNavi AI方案**：
+- 将您的研究设计（PSM + 生存分析）与期刊偏好匹配
+- 推荐5-7个期刊，附分区（Q1/Q2）和匹配理由
+- 提供定位建议（如强调真实世界证据、异质性分析）
+- 警示潜在拒稿触发因素（如平衡性诊断不足）
+
+**结果**：战略性投稿计划，附备选方案。
+
+---
+
+### 💡 为什么选择 SciNavi AI？
+
+**对比人工文献综述：**
+- ⏱️ **60秒 vs. 2周**：即时证据溯源和新颖性验证
+- 🎯 **全面性**：覆盖方法学、数据、发表策略——不仅是"这个新颖吗？"
+- 🔄 **可迭代**：根据AI反馈即时优化选题
+
+**对比统计咨询师：**
+- 💰 **免费 vs. ¥1500/小时**：无咨询费用
+- 🕐 **7×24可用**：无需预约排期
+- 📝 **可复现**：获得Python代码 + LaTeX公式，而非口头建议
+
+**对比通用AI聊天机器人（ChatGPT、Claude）：**
+- 🎓 **领域专精**：针对流行病学、卫生经济学、因果推断训练
+- 📊 **结构化输出**：JSON协议、Mermaid DAG、可执行代码——而非纯文本
+- 🔗 **证据支撑**：引用真实论文，无虚构参考文献
 
 ### 🎯 核心功能
 
