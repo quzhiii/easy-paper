@@ -90,34 +90,42 @@ const callOpenAICompatible = async (
   }
 
   try {
-      const response = await fetch(finalEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
+      // Build request body
+      const requestBody: any = {
           model: model,
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt }
           ],
           temperature: 0.1,
-          response_format: { type: "json_object" }, // Try to force JSON for compatible models too
           stream: false
-        })
+      };
+
+      // Only add response_format for OpenAI (GPT models)
+      if (endpoint.includes('openai.com')) {
+          requestBody.response_format = { type: "json_object" };
+      }
+
+      const response = await fetch(finalEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
-        throw new Error(`API Error: ${response.status} - ${err.error?.message || response.statusText}`);
+        const errorMsg = err.error?.message || err.message || response.statusText;
+        throw new Error(`API Error (${response.status}): ${errorMsg}`);
       }
 
       const data = await response.json();
       return data.choices?.[0]?.message?.content || "";
   } catch (error: any) {
-      if (error.message?.includes('Failed to fetch') || error.name === 'TypeError') {
-           throw new Error("Network Error: Could not connect to API. Check your internet connection or CORS settings.");
+      if (error.message?.includes('Failed to fetch') || error.name === 'TypeError' || error.message?.includes('NetworkError')) {
+           throw new Error("Network Error: Could not connect to API. This is usually caused by: (1) CORS restrictions - you may need to use a proxy or backend service; (2) Incorrect API endpoint; (3) Network connectivity issues. Please check your API configuration.");
       }
       throw error;
   }
@@ -132,39 +140,37 @@ const callGemini = async (apiKey: string, model: string, baseUrl: string, system
 
   const ai = new GoogleGenAI(clientOptions);
   
-  // FIX: Use streaming to prevent "Rpc failed due to xhr error" (timeout/proxy buffer limits)
+  // Try non-streaming first for better CORS compatibility
   try {
-      const response = await ai.models.generateContentStream({
+      const response = await ai.models.generateContent({
         model: model,
         contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-        config: {
-          systemInstruction: systemPrompt,
-          temperature: 0.1, // Lower temperature for more stable JSON
-          responseMimeType: 'application/json' 
+        systemInstruction: systemPrompt,
+        generationConfig: {
+          temperature: 0.1,
+          responseMimeType: 'application/json'
         }
       });
 
-      let fullText = "";
-      for await (const chunk of response) {
-        if (chunk.text) {
-          fullText += chunk.text;
-        }
-      }
+      const fullText = response.response?.text() || "";
       return fullText;
   } catch (error: any) {
       // Handle GoogleGenAI specific error structures or network errors
-      // The error often comes as an object that is stringified as [object Object] if not handled.
-      // We check specific properties.
-      
       const errorMessage = error.message || error.toString();
       
-      if (errorMessage.includes('0') || errorMessage.includes('fetch') || errorMessage.includes('NetworkError')) {
-          throw new Error("Connection Failed (Status 0): Likely a CORS issue, proxy issue, or network timeout.");
+      // Check for common network/CORS errors
+      if (errorMessage.includes('0') || errorMessage.includes('fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('CORS')) {
+          throw new Error("Gemini Connection Failed: This is likely a CORS issue. Gemini API requires server-side calls or proper CORS configuration. Solutions: (1) Use a backend proxy server; (2) Try a different provider; (3) Check your API key and endpoint.");
+      }
+      
+      // Check for API key issues
+      if (errorMessage.includes('API_KEY_INVALID') || errorMessage.includes('401') || errorMessage.includes('403')) {
+          throw new Error(`Gemini API Key Error: ${errorMessage}. Please verify your API key in Settings.`);
       }
       
       // If it's a structured error from SDK
       if (error.statusText) {
-          throw new Error(`Gemini API Error: ${error.statusText} (${error.status})`);
+          throw new Error(`Gemini API Error: ${error.statusText} (${error.status || 'unknown'})`);
       }
       
       throw new Error(`Gemini Error: ${errorMessage}`);

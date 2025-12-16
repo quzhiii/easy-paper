@@ -109,14 +109,24 @@ const App: React.FC = () => {
       saveToHistory(input, data);
     } catch (err: any) {
       const msg = err.message || '';
-      if (msg.includes('API Key') || msg.includes('Missing API Key')) {
-         setError(language === 'en' ? 'Invalid or Missing API Key.' : 'API Key 无效或未配置。');
+      
+      // Detailed error handling
+      if (msg.includes('API Key') || msg.includes('Missing API Key') || msg.includes('401') || msg.includes('403')) {
+         setError(language === 'en' 
+           ? 'Invalid or Missing API Key. Please check your configuration.' 
+           : 'API Key 无效或未配置，请检查您的配置。');
          setIsSettingsOpen(true);
+      } else if (msg.includes('CORS') || msg.includes('Network Error') || msg.includes('Connection Failed')) {
+         setError(language === 'en' 
+           ? `Network Error: ${msg}. For Gemini, consider using a different provider or setting up a backend proxy.` 
+           : `网络错误：${msg}。对于 Gemini，建议使用其他服务商或配置后端代理。`);
       } else {
-         setError(language === 'en' ? 'Failed to generate evaluation. Please try again.' : '评估生成失败，请重试。');
+         setError(language === 'en' 
+           ? `Evaluation failed: ${msg}` 
+           : `评估失败：${msg}`);
       }
       setView('input'); // Go back to input on error
-      console.error(err);
+      console.error('Evaluation Error:', err);
     }
   };
 

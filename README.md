@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/React-19.2-61dafb)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646cff)](https://vitejs.dev/)
 
-[English](#english) | [中文](#chinese)
+[English](#english) | [中文](#chinese) | [📖 Troubleshooting](TROUBLESHOOTING.md)
 
 </div>
 
