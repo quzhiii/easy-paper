@@ -132,7 +132,7 @@ const callOpenAICompatible = async (
 };
 
 // Gemini - REST API (Lightweight, better CORS support)
-const callGeminiREST = async (apiKey: string, model: string, systemPrompt: string, userPrompt: string) => {
+const callGeminiREST = async (apiKey: string, model: string, systemPrompt: string, userPrompt: string, retryCount = 0) => {
   // Use Gemini REST API directly (no SDK)
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
   
@@ -164,6 +164,18 @@ const callGeminiREST = async (apiKey: string, model: string, systemPrompt: strin
       if (response.status === 401 || response.status === 403) {
         throw new Error(`Gemini API Key Error: ${errorMsg}. Please verify your API key.`);
       }
+      
+      // Handle 503 Service Overloaded - retry with exponential backoff
+      if (response.status === 503 || response.status === 429 || errorMsg.includes('overloaded')) {
+        if (retryCount < 2) {
+          const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s
+          console.warn(`Gemini API overloaded, retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return callGeminiREST(apiKey, model, systemPrompt, userPrompt, retryCount + 1);
+        }
+        throw new Error(`Gemini API Overloaded (${response.status}): ${errorMsg}. Please try again later or use a different model like Qwen/Kimi.`);
+      }
+      
       throw new Error(`Gemini API Error (${response.status}): ${errorMsg}`);
     }
 

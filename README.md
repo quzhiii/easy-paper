@@ -12,7 +12,7 @@
 
 ### 🌐 Try It Now
 
-**[🚀 Launch App on Vercel](https://easy-paper.vercel.app)** | **[📦 View on GitHub](https://github.com/quzhiii/easy-paper)**
+**[🚀 Launch App](https://easy-paper.vercel.app)** | **[📦 Source Code](https://github.com/quzhiii/easy-paper)**
 
 [English](#english) | [中文](#chinese) | [📖 Troubleshooting](TROUBLESHOOTING.md)
 
