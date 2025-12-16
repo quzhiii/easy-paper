@@ -12,10 +12,11 @@
 
 ### 🌐 在线使用
 
-**部署地址:** https://easy-paper.vercel.app  
+**GitHub Pages:** https://quzhiii.github.io/easy-paper/  
+**Vercel:** https://easy-paper.vercel.app  
 **GitHub:** https://github.com/quzhiii/easy-paper
 
-[🚀 立即使用](https://easy-paper.vercel.app) | [📦 源代码](https://github.com/quzhiii/easy-paper)
+[🚀 立即使用](https://quzhiii.github.io/easy-paper/) | [📦 源代码](https://github.com/quzhiii/easy-paper)
 
 [English](#english) | [中文](#chinese) | [📖 Troubleshooting](TROUBLESHOOTING.md)
 
