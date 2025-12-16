@@ -63,13 +63,13 @@ const SettingsModal: React.FC<Props> = ({ isOpen, onClose, settings, onSave, lan
     }));
   };
 
-  const providers: { id: LLMProviderId; name: string; icon: string }[] = [
-    { id: 'qwen', name: 'Qwen', icon: '🇨🇳' },
-    { id: 'kimi', name: 'Kimi', icon: '🌙' },
-    { id: 'deepseek', name: 'DeepSeek', icon: '🤖' },
-    { id: 'zhipu', name: 'Zhipu (GLM)', icon: '🧠' },
-    { id: 'openai', name: 'OpenAI', icon: '🇺🇸' },
-    { id: 'gemini', name: 'Gemini', icon: '💎' },
+  const providers: { id: LLMProviderId; name: string; icon: string; recommended?: boolean; warning?: string }[] = [
+    { id: 'qwen', name: 'Qwen (通义千问)', icon: '🇨🇳', recommended: true },
+    { id: 'kimi', name: 'Kimi (月之暗面)', icon: '🌙', recommended: true },
+    { id: 'deepseek', name: 'DeepSeek', icon: '🤖', recommended: true },
+    { id: 'zhipu', name: 'Zhipu GLM (智谱)', icon: '🧠' },
+    { id: 'openai', name: 'OpenAI (GPT)', icon: '🇺🇸' },
+    { id: 'gemini', name: 'Gemini (Google)', icon: '💎', warning: language === 'zh' ? 'Gemini在浏览器环境有CORS限制，建议使用其他服务商' : 'Gemini has CORS limitations in browser. Use other providers for better experience.' },
   ];
 
   const toggleManualMode = (providerId: string, isManual: boolean) => {
@@ -117,15 +117,28 @@ const SettingsModal: React.FC<Props> = ({ isOpen, onClose, settings, onSave, lan
                 {/* Provider Cards */}
                 <div className="space-y-3">
                     <label className="text-sm font-bold text-zinc-900">{t.provider_label}</label>
+                    <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-100">
+                        {language === 'zh' ? '⭐ 推荐使用通义千问、Kimi或DeepSeek，无CORS问题，稳定可靠' : '⭐ Recommended: Qwen, Kimi, or DeepSeek - No CORS issues, stable and reliable'}
+                    </p>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {providers.map(p => (
                         <button
                         key={p.id}
                         onClick={() => setLocalSettings(prev => ({ ...prev, provider: p.id }))}
-                        className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all ${localSettings.provider === p.id ? 'bg-zinc-900 text-white border-zinc-900 shadow-md' : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'}`}
+                        className={`relative flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all ${localSettings.provider === p.id ? 'bg-zinc-900 text-white border-zinc-900 shadow-md' : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'}`}
                         >
+                        {p.recommended && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                {language === 'zh' ? '推荐' : 'TOP'}
+                            </span>
+                        )}
+                        {p.warning && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                ⚠️
+                            </span>
+                        )}
                         <span className="text-xl">{p.icon}</span>
-                        <span className="text-xs font-bold">{p.name}</span>
+                        <span className="text-xs font-bold text-center">{p.name}</span>
                         </button>
                     ))}
                     </div>

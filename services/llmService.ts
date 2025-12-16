@@ -194,25 +194,56 @@ export const generateLLMResponse = async ({ systemPrompt, userPrompt, settings }
   let endpoint = settings.baseUrls[provider];
   if (!endpoint) endpoint = DEFAULT_ENDPOINTS[provider];
 
-  // Call Provider
+  // Check if we're in production (Vercel/deployed) and should use proxy
+  const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+  const useProxy = isProduction || provider === 'gemini';
+
   let text = "";
   try {
-    switch (provider) {
-      case 'qwen':
-      case 'kimi':
-      case 'deepseek':
-      case 'zhipu':
-      case 'openai':
-        text = await callOpenAICompatible(endpoint, apiKey, modelName, systemPrompt, userPrompt);
-        break;
-      case 'gemini':
-        text = await callGemini(apiKey, modelName, endpoint, systemPrompt, userPrompt);
-        break;
-      default:
-        throw new Error("Unsupported provider");
+    if (useProxy) {
+      // Use Vercel serverless function proxy
+      const proxyEndpoint = '/api/llm-proxy';
+      const response = await fetch(proxyEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          provider,
+          apiKey,
+          model: modelName,
+          systemPrompt,
+          userPrompt,
+          baseUrl: endpoint
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Proxy error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      text = data.content || "";
+    } else {
+      // Direct call (development mode for non-Gemini providers)
+      switch (provider) {
+        case 'qwen':
+        case 'kimi':
+        case 'deepseek':
+        case 'zhipu':
+        case 'openai':
+          text = await callOpenAICompatible(endpoint, apiKey, modelName, systemPrompt, userPrompt);
+          break;
+        case 'gemini':
+          text = await callGemini(apiKey, modelName, endpoint, systemPrompt, userPrompt);
+          break;
+        default:
+          throw new Error("Unsupported provider");
+      }
     }
   } catch (error: any) {
-    if (error.message?.includes('401')) {
+    if (error.message?.includes('401') || error.message?.includes('403')) {
       throw new Error("Invalid API Key. Please check your credentials.");
     }
     throw error;
