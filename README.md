@@ -14,7 +14,9 @@
 
 **Vercel:** (https://easypaper-gh0yhg4t8-quzhiiis-projects.vercel.app/)
 
-[🚀 立即使用]GitHub Pages(https://quzhiii.github.io/easy-paper/) 
+[🚀 立即使用]
+
+**GitHub Pages:**(https://quzhiii.github.io/easy-paper/) 
 
 [English](#english) | [中文](#chinese) | [📖 Troubleshooting](TROUBLESHOOTING.md)
 
