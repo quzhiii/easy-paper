@@ -64,12 +64,12 @@ const SettingsModal: React.FC<Props> = ({ isOpen, onClose, settings, onSave, lan
   };
 
   const providers: { id: LLMProviderId; name: string; icon: string; recommended?: boolean; warning?: string }[] = [
-    { id: 'qwen', name: 'Qwen (通义千问)', icon: '🇨🇳', recommended: true },
+    { id: 'qwen', name: 'Qwen (通义千问)', icon: 'CN', recommended: true },
     { id: 'kimi', name: 'Kimi (月之暗面)', icon: '🌙', recommended: true },
-    { id: 'deepseek', name: 'DeepSeek', icon: '🤖', recommended: true },
+    { id: 'deepseek', name: 'DeepSeek', icon: '📚', recommended: true },
     { id: 'zhipu', name: 'Zhipu GLM (智谱)', icon: '🧠' },
-    { id: 'openai', name: 'OpenAI (GPT)', icon: '🇺🇸' },
-    { id: 'gemini', name: 'Gemini (Google)', icon: '💎', warning: language === 'zh' ? 'Gemini在浏览器环境有CORS限制，建议使用其他服务商' : 'Gemini has CORS limitations in browser. Use other providers for better experience.' },
+    { id: 'openai', name: 'OpenAI (GPT)', icon: 'US' },
+    { id: 'gemini', name: 'Gemini (Google)', icon: '💎', warning: language === 'zh' ? '⚠️ Gemini仅支持联网搜索，不支持上传文件分析。建议上传文件时使用Qwen/Kimi/DeepSeek' : '⚠️ Gemini only supports online search, not file upload analysis. Use Qwen/Kimi/DeepSeek for file uploads.' },
   ];
 
   const toggleManualMode = (providerId: string, isManual: boolean) => {
