@@ -12,9 +12,9 @@
 
 ### 🌐 在线使用
 
-**Vercel:** https://traegb0c2a25.vercel.app 
+**Vercel:** (https://easypaper-gh0yhg4t8-quzhiiis-projects.vercel.app/)
 
-[🚀 立即使用](https://quzhiii.github.io/easy-paper/) 
+[🚀 立即使用]GitHub Pages(https://quzhiii.github.io/easy-paper/) 
 
 [English](#english) | [中文](#chinese) | [📖 Troubleshooting](TROUBLESHOOTING.md)
 
