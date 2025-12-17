@@ -13,10 +13,9 @@
 ### 🌐 在线使用
 
 **GitHub Pages:** https://quzhiii.github.io/easy-paper/  
-**Vercel:** https://easy-paper.vercel.app  
-**GitHub:** https://github.com/quzhiii/easy-paper
+**Vercel:** traegb0c2a25.vercel.app 
 
-[🚀 立即使用](https://quzhiii.github.io/easy-paper/) | [📦 源代码](https://github.com/quzhiii/easy-paper)
+[🚀 立即使用](https://quzhiii.github.io/easy-paper/) 
 
 [English](#english) | [中文](#chinese) | [📖 Troubleshooting](TROUBLESHOOTING.md)
 
