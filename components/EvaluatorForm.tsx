@@ -257,17 +257,21 @@ const EvaluatorForm: React.FC<Props> = ({ language, isLoading, onSubmit, initial
 
       const newFiles: UploadedFile[] = [];
       let totalRefs = 0;
+      let totalContentLength = 0;
+      const maxTotalContent = 50000; // 50K chars total limit
 
       for (const file of files) {
           const content = await file.text();
           
-          // Check content length (50K chars limit per geminiService.ts)
-          if (content.length > 50000) {
+          // Check total content length
+          if (totalContentLength + content.length > maxTotalContent) {
               alert(language === 'zh'
-                  ? `文件 "${file.name}" 过大 (${Math.round(content.length/1000)}KB)，请分割成小文件或减少文献数量。`
-                  : `File "${file.name}" too large (${Math.round(content.length/1000)}KB). Please split or reduce references.`);
-              continue;
+                  ? `总内容超限！已达 ${Math.round((totalContentLength + content.length)/1000)}KB，上限 ${Math.round(maxTotalContent/1000)}KB。请减少文件数量或筛选核心文献。`
+                  : `Total content limit exceeded! Current: ${Math.round((totalContentLength + content.length)/1000)}KB, Max: ${Math.round(maxTotalContent/1000)}KB. Please reduce files or select core papers.`);
+              break;
           }
+          
+          totalContentLength += content.length;
           
           let parsed: any[] = [];
           const name = file.name.toLowerCase();
@@ -575,8 +579,8 @@ const EvaluatorForm: React.FC<Props> = ({ language, isLoading, onSubmit, initial
                     
                     <div className="text-[11px] text-zinc-500 text-center mt-2 max-w-md">
                         {language === 'zh' 
-                            ? '⚠️ 限制：最多 10 个文件，总计不超过 150 篇文献，单文件 50KB 以内' 
-                            : '⚠️ Limits: Max 10 files, 150 total references, 50KB per file'}
+                            ? '⚠️ 限制：最多 10 个文件，总内容 50KB 以内，建议不超过 150 篇文献' 
+                            : '⚠️ Limits: Max 10 files, 50KB total content, ~150 references recommended'}
                     </div>
                     <p className="text-xs text-zinc-500 font-medium text-center">
                         {language === 'zh' ? '点击上传 WoS / PubMed / CNKI / Zotero / RefWorks 导出的文件 (支持多选)' : 'Click to upload multiple files (RIS, BibTeX, Zotero, RefWorks, CSV...)'}
