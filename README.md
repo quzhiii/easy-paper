@@ -285,6 +285,7 @@ npm run dev
 
 ## 🙏 致谢
 
+- 特别感谢 **Google Gemini AI Studio** 提供的强大  Vibe Coding
 - 由最先进的大语言模型驱动（通义千问、Kimi、DeepSeek、智谱、OpenAI、Gemini）
 - 受循证医学和因果推断方法学启发
 - 为全球科研社区打造
@@ -301,7 +302,11 @@ npm run dev
 <div align="center">
 
 ---
+**由研究者为研究者用 ❤️ 打造**
 
+如果 SciNavi AI 对您的科研之旅有所帮助，请在 GitHub 上给我们一个 ⭐！
+
+</div>
 ## <a id="english"></a>🌟 Overview
 
 **SciNavi AI** is a next-generation research design copilot that leverages large language models to provide comprehensive methodological guidance for academic research. From topic selection to methodology design, from evidence tracing to journal fit—all powered by AI.
@@ -563,6 +568,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
+- Special thanks to **Google Gemini AI Studio** for providing the powerful Vibe Coding feature
 - Powered by state-of-the-art large language models (Qwen, Kimi, DeepSeek, Zhipu, OpenAI, Gemini)
 - Inspired by evidence-based medicine and causal inference methodologies
 - Built for the global research community
@@ -585,8 +591,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 </div>
 
 ---
-**由研究者为研究者用 ❤️ 打造**
 
-如果 SciNavi AI 对您的科研之旅有所帮助，请在 GitHub 上给我们一个 ⭐！
-
-</div>
