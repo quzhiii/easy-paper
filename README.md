@@ -300,13 +300,14 @@ npm run dev
 ---
 
 <div align="center">
-
----
 **由研究者为研究者用 ❤️ 打造**
 
 如果 SciNavi AI 对您的科研之旅有所帮助，请在 GitHub 上给我们一个 ⭐！
+---
 
 </div>
+
+
 ## <a id="english"></a>🌟 Overview
 
 **SciNavi AI** is a next-generation research design copilot that leverages large language models to provide comprehensive methodological guidance for academic research. From topic selection to methodology design, from evidence tracing to journal fit—all powered by AI.
