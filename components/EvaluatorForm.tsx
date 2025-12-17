@@ -258,7 +258,7 @@ const EvaluatorForm: React.FC<Props> = ({ language, isLoading, onSubmit, initial
       const newFiles: UploadedFile[] = [];
       let totalRefs = 0;
       let totalContentLength = 0;
-      const maxTotalContent = 50000; // 50K chars total limit
+      const maxTotalContent = 300000; // 300K chars total limit
 
       for (const file of files) {
           const content = await file.text();
@@ -579,8 +579,8 @@ const EvaluatorForm: React.FC<Props> = ({ language, isLoading, onSubmit, initial
                     
                     <div className="text-[11px] text-zinc-500 text-center mt-2 max-w-md">
                         {language === 'zh' 
-                            ? '⚠️ 限制：最多 10 个文件，总内容 50KB 以内，建议不超过 150 篇文献' 
-                            : '⚠️ Limits: Max 10 files, 50KB total content, ~150 references recommended'}
+                            ? '⚠️ 限制：最多 10 个文件，总内容 300KB 以内，建议不超过 100 篇文献' 
+                            : '⚠️ Limits: Max 10 files, 300KB total content, ~100 references recommended'}
                     </div>
                     <p className="text-xs text-zinc-500 font-medium text-center">
                         {language === 'zh' ? '点击上传 WoS / PubMed / CNKI / Zotero / RefWorks 导出的文件 (支持多选)' : 'Click to upload multiple files (RIS, BibTeX, Zotero, RefWorks, CSV...)'}
