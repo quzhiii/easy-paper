@@ -301,8 +301,8 @@ export const generateLLMResponse = async ({ systemPrompt, userPrompt, settings }
           throw restError;
         }
       }
-    } else if (useProxy && isProduction) {
-      // Other providers: Use proxy in production
+    } else if (isVercel && isProduction) {
+      // Other providers: Use Vercel proxy in production (not available on GitHub Pages)
       const proxyEndpoint = '/api/llm-proxy';
       const response = await fetch(proxyEndpoint, {
         method: 'POST',
