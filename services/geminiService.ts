@@ -276,14 +276,44 @@ export const evaluateResearchTopic = async (
       return JSON.parse(cleanedText) as EvaluationResult;
     } catch (parseError) {
       console.warn("Initial JSON Parse Failed. Attempting repair...", parseError);
-      try {
-        const repairedText = repairJsonString(cleanedText);
-        return JSON.parse(repairedText) as EvaluationResult;
-      } catch (repairError) {
-         console.error("JSON Repair Failed:", repairError);
-         console.log("Failed Text Snippet:", cleanedText.slice(0, 500));
-         throw new Error(`Evaluation logic failed: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+      
+      // Try multiple repair strategies
+      const repairStrategies = [
+        () => repairJsonString(cleanedText),
+        () => {
+          // Strategy 2: More aggressive comma fixing
+          let fixed = cleanedText;
+          // Fix: "text" "property": pattern
+          fixed = fixed.replace(/("[^"]*")\s+("[^"]*"\s*:)/g, '$1,$2');
+          // Fix: ] "property": pattern
+          fixed = fixed.replace(/(\])\s+("[^"]*"\s*:)/g, '$1,$2');
+          // Fix: } "property": pattern
+          fixed = fixed.replace(/(\})\s+("[^"]*"\s*:)/g, '$1,$2');
+          return fixed;
+        },
+        () => {
+          // Strategy 3: Fix numeric/boolean values followed by properties
+          let fixed = cleanedText;
+          // Fix: number/boolean followed by property
+          fixed = fixed.replace(/(true|false|\d+)\s+("[^"]*"\s*:)/g, '$1,$2');
+          return fixed;
+        }
+      ];
+      
+      for (let i = 0; i < repairStrategies.length; i++) {
+        try {
+          const repairedText = repairStrategies[i]();
+          return JSON.parse(repairedText) as EvaluationResult;
+        } catch (strategyError) {
+          if (i === repairStrategies.length - 1) {
+            console.error("All JSON Repair Strategies Failed:", strategyError);
+            console.log("Failed Text Snippet:", cleanedText.slice(0, 500));
+            throw new Error(`Evaluation logic failed: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+          }
+        }
       }
+      
+      throw new Error(`Evaluation logic failed: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
     }
   } catch (error) {
     console.error("Evaluation logic failed:", error);
