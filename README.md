@@ -26,8 +26,6 @@
 
 ## <a id="chinese"></a>🌟 项目概述
 
-</div>
-
 ---
 
 ## <a id="english"></a>🌟 Overview
