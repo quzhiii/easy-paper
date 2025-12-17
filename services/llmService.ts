@@ -136,6 +136,12 @@ const callGeminiREST = async (apiKey: string, model: string, systemPrompt: strin
   // Use Gemini REST API directly (no SDK)
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
   
+  // Check total content length - Gemini has limits
+  const totalLength = systemPrompt.length + userPrompt.length;
+  if (totalLength > 1000000) { // 1M characters safety limit
+    throw new Error(`Content too large (${Math.round(totalLength/1000)}K chars). Try reducing file size or timeframe.`);
+  }
+  
   try {
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -253,21 +259,21 @@ export const generateLLMResponse = async ({ systemPrompt, userPrompt, settings }
   let endpoint = settings.baseUrls[provider];
   if (!endpoint) endpoint = DEFAULT_ENDPOINTS[provider];
 
-  // Check if we're in production (Vercel/deployed) and should use proxy
+  // Check if we're on Vercel (proxy available) or GitHub Pages (no proxy)
+  const isVercel = window.location.hostname.includes('vercel.app');
   const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-  const useProxy = isProduction || provider === 'gemini';
 
   let text = "";
   try {
-    // For Gemini: Try REST API first (better CORS support), fallback to proxy if needed
+    // For Gemini: Try REST API first (better CORS support), fallback to proxy only on Vercel
     if (provider === 'gemini') {
       try {
         // Method 1: REST API (Recommended for browser)
         text = await callGeminiREST(apiKey, modelName, systemPrompt, userPrompt);
       } catch (restError: any) {
-        // If REST fails and we're in production, try proxy
-        if (useProxy && isProduction) {
-          console.warn('Gemini REST API failed, trying proxy...', restError.message);
+        // If REST fails and we're on Vercel (not GitHub Pages), try proxy
+        if (isVercel) {
+          console.warn('Gemini REST API failed, trying Vercel proxy...', restError.message);
           const proxyEndpoint = '/api/llm-proxy';
           const response = await fetch(proxyEndpoint, {
             method: 'POST',
