@@ -12,9 +12,9 @@
 
 ### 🌐 在线使用
 
-**Vercel:** https://traegb0c2a25.vercel.app/
+**Vercel:** https://easypaper-gh0yhg4t8-quzhiiis-projects.vercel.app/
 
-[🚀 立即使用](https://traegb0c2a25.vercel.app/)
+[🚀 立即使用](https://easypaper-gh0yhg4t8-quzhiiis-projects.vercel.app/)
 
 **GitHub Pages:** https://quzhiii.github.io/easy-paper/ 
 
@@ -25,6 +25,8 @@
 ---
 
 ## <a id="chinese"></a>🌟 项目概述
+
+**SciNavi AI** 是新一代 AI 驱动的科研设计助手，通过大语言模型为学术研究提供全方位的方法学指导。从选题论证到方法设计，从文献溯源到期刊匹配——一切由 AI 赋能。
 
 ---
 
