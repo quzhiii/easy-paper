@@ -136,10 +136,12 @@ const callGeminiREST = async (apiKey: string, model: string, systemPrompt: strin
   // Use Gemini REST API directly (no SDK)
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
   
-  // Check total content length - Gemini has limits
+  // Check total content length - Gemini free tier has ~30K token limit (~120K chars)
   const totalLength = systemPrompt.length + userPrompt.length;
-  if (totalLength > 1000000) { // 1M characters safety limit
-    throw new Error(`Content too large (${Math.round(totalLength/1000)}K chars). Try reducing file size or timeframe.`);
+  const maxLength = 300000; // 300K chars safety limit for free tier
+  
+  if (totalLength > maxLength) {
+    throw new Error(`Content too large (${Math.round(totalLength/1000)}K characters, limit: ${Math.round(maxLength/1000)}K). Try: (1) Upload fewer references; (2) Reduce timeframe; (3) Use Qwen/Kimi instead.`);
   }
   
   try {
@@ -169,6 +171,13 @@ const callGeminiREST = async (apiKey: string, model: string, systemPrompt: strin
       
       if (response.status === 401 || response.status === 403) {
         throw new Error(`Gemini API Key Error: ${errorMsg}. Please verify your API key.`);
+      }
+      
+      // Handle 400 Bad Request (often due to content length)
+      if (response.status === 400) {
+        if (errorMsg.includes('too long') || errorMsg.includes('token') || errorMsg.includes('limit')) {
+          throw new Error(`Gemini API Error: Content too long. Try uploading fewer references or use Qwen/Kimi which support longer context.`);
+        }
       }
       
       // Handle 503 Service Overloaded - retry with exponential backoff

@@ -245,11 +245,30 @@ const EvaluatorForm: React.FC<Props> = ({ language, isLoading, onSubmit, initial
 
       const files: File[] = Array.from(targetFiles);
       if (files.length === 0) return;
+      
+      // Check file count limit
+      const maxFiles = 10;
+      if (files.length > maxFiles) {
+          alert(language === 'zh' 
+              ? `文件数量超限！最多上传 ${maxFiles} 个文件。` 
+              : `Too many files! Maximum ${maxFiles} files allowed.`);
+          return;
+      }
 
       const newFiles: UploadedFile[] = [];
+      let totalRefs = 0;
 
       for (const file of files) {
           const content = await file.text();
+          
+          // Check content length (50K chars limit per geminiService.ts)
+          if (content.length > 50000) {
+              alert(language === 'zh'
+                  ? `文件 "${file.name}" 过大 (${Math.round(content.length/1000)}KB)，请分割成小文件或减少文献数量。`
+                  : `File "${file.name}" too large (${Math.round(content.length/1000)}KB). Please split or reduce references.`);
+              continue;
+          }
+          
           let parsed: any[] = [];
           const name = file.name.toLowerCase();
 
@@ -498,6 +517,11 @@ const EvaluatorForm: React.FC<Props> = ({ language, isLoading, onSubmit, initial
                 {/* File List */}
                 {uploadedFiles.length > 0 && (
                     <div className="flex flex-col gap-2 mb-3">
+                        <div className="text-[11px] text-zinc-600 font-semibold px-2">
+                            {language === 'zh' 
+                                ? `已上传 ${uploadedFiles.length} 个文件，总计 ${uploadedFiles.reduce((sum, f) => sum + f.count, 0)} 篇文献`
+                                : `${uploadedFiles.length} files uploaded, ${uploadedFiles.reduce((sum, f) => sum + f.count, 0)} total references`}
+                        </div>
                         {uploadedFiles.map((file, idx) => (
                             <div key={idx} className="flex justify-between items-center p-3 bg-white border border-zinc-200 rounded-xl shadow-sm animate-in slide-in-from-top-1">
                                 <div className="flex items-center gap-3">
@@ -547,6 +571,12 @@ const EvaluatorForm: React.FC<Props> = ({ language, isLoading, onSubmit, initial
                                     {f.ext}
                                 </span>
                             ))}
+                    </div>
+                    
+                    <div className="text-[11px] text-zinc-500 text-center mt-2 max-w-md">
+                        {language === 'zh' 
+                            ? '⚠️ 限制：最多 10 个文件，总计不超过 150 篇文献，单文件 50KB 以内' 
+                            : '⚠️ Limits: Max 10 files, 150 total references, 50KB per file'}
                     </div>
                     <p className="text-xs text-zinc-500 font-medium text-center">
                         {language === 'zh' ? '点击上传 WoS / PubMed / CNKI / Zotero / RefWorks 导出的文件 (支持多选)' : 'Click to upload multiple files (RIS, BibTeX, Zotero, RefWorks, CSV...)'}

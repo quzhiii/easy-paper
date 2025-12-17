@@ -233,15 +233,26 @@ export const evaluateResearchTopic = async (
   `;
 
   if (hasUploads) {
+      // Limit references length to prevent prompt overflow (Gemini has ~30K token limit)
+      const maxRefLength = 50000; // ~50K chars safety limit
+      let referencesText = input.references || '';
+      let truncated = false;
+      
+      if (referencesText.length > maxRefLength) {
+        referencesText = referencesText.substring(0, maxRefLength);
+        truncated = true;
+      }
+      
       userPrompt += `
       
       ======================================================
       *** USER UPLOADED BIBLIOGRAPHY (Evidence Pack) ***
       The user has provided the following raw reference text. 
       Please parse these entries and use them to support your analysis.
+      ${truncated ? '(Note: Content truncated due to length limit. Showing first 50K characters.)' : ''}
       ======================================================
       
-      ${input.references}
+      ${referencesText}
       
       ======================================================
       `;
